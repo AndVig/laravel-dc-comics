@@ -32,24 +32,28 @@ class ComicController extends Controller
      */
     public function store(Request $request)
     {
-         Comic::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'thumb' => $request->thumb,
-            'price' => $request->price,
-            'series' => $request->series,
-            'sale_date' => $request->sale_date,
-            'type' => $request->type,
-            'artists' => $request->artists,
-            'writers' => $request->writers,
-        ]);
-        return redirect()->route('comics.index');
+        $data = $request->all();
+
+        $comic = new Comic();
+
+        $comic->title = $data['title'];
+        $comic->description = $data['description'];
+        $comic->thumb = $data['thumb'];
+        $comic->price = $data['price'];
+        $comic->series = $data['series'];
+        $comic->sale_date = $data['sale_date'];
+        $comic->type = $data['type'];
+
+        $comic->fill($data); 
+        $comic->save();
+
+        return redirect()->route('comics.show', $comic->id);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Comic $comic)
     {
         return view('comics.show', compact('comic'));
     }
