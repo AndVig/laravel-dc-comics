@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreComicRequest;
+use App\Http\Requests\UpdateComicRequest;
 use Illuminate\Http\Request;
 use App\Models\Comic;
 
@@ -30,19 +32,19 @@ class ComicController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreComicRequest $request)
     {
         $data = $request->all();
-
+        
         $comic = new Comic();
 
-        $comic->title = $data['title'];
-        $comic->description = $data['description'];
-        $comic->thumb = $data['thumb'];
-        $comic->price = $data['price'];
-        $comic->series = $data['series'];
-        $comic->sale_date = $data['sale_date'];
-        $comic->type = $data['type'];
+        // $comic->title = $data['title'];
+        // $comic->description = $data['description'];
+        // $comic->thumb = $data['thumb'];
+        // $comic->price = $data['price'];
+        // $comic->series = $data['series'];
+        // $comic->sale_date = $data['sale_date'];
+        // $comic->type = $data['type'];
 
         $comic->fill($data); 
         $comic->save();
@@ -71,12 +73,13 @@ class ComicController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Comic $comic)
+    public function update(UpdateComicRequest $request, string $id)
     {
         $data = $request->all();
-        $comic->update($data); // non ha bisogno di save anche se non faccio il mapping a mano
-
-        return redirect()->route('comics.show', $comic->id);
+        $comic = Comic::findOrFail($id);
+        $comic->update($data); 
+        $data = $request->validated();
+        return view('comics.show', compact('comic'));
     }
 
     /**
